@@ -3,8 +3,8 @@ import { createServer as createViteServer } from "vite";
 import path from "path";
 import { fileURLToPath } from "url";
 import morgan from "morgan";
-import apiRoutes from "./src/server/routes/api.js";
-import { errorHandler } from "./src/server/middleware/error.js";
+import apiRoutes from "./src/server/routes/api";
+import { errorHandler } from "./src/server/middleware/error";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);

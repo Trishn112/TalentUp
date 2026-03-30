@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
-import { db } from "../config/firebase.js";
-import { AIService } from "../services/ai.js";
-import { Logger } from "../utils/logger.js";
+import { db } from "../config/firebase";
+import { AIService } from "../services/ai";
+import { Logger } from "../utils/logger";
 
 export class InterviewController {
   static async startSession(req: any, res: Response) {
