@@ -1,0 +1,117 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // ===============================================================
+    // Assumed Data Model
+    // ===============================================================
+    //
+    // Collection: /users/{userId}
+    // Document ID: userId (Firebase Auth UID)
+    // Fields:
+    //   - name: string (required)
+    //   - targetRole: string (required)
+    //   - skills: list of strings (optional)
+    //   - updatedAt: timestamp (required)
+    //
+    // Collection: /roadmaps/{roadmapId}
+    // Document ID: auto-generated
+    // Fields:
+    //   - uid: string (required, owner UID)
+    //   - role: string (required)
+    //   - analysis: map (required)
+    //   - steps: list of maps (required)
+    //   - progress: map (optional)
+    //   - createdAt: timestamp (required)
+    //
+    // Collection: /interviews/{interviewId}
+    // Document ID: auto-generated
+    // Fields:
+    //   - uid: string (required, owner UID)
+    //   - role: string (required)
+    //   - messages: list of maps (required)
+    //   - createdAt: timestamp (required)
+    //
+    // ===============================================================
+
+    // ===============================================================
+    // Helper Functions
+    // ===============================================================
+
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+
+    function isDocOwner() {
+      return isAuthenticated() && request.auth.uid == resource.data.uid;
+    }
+
+    function isNewDocOwner() {
+      return isAuthenticated() && request.auth.uid == request.resource.data.uid;
+    }
+
+    function hasRequiredFields(fields) {
+      return request.resource.data.keys().hasAll(fields);
+    }
+
+    function isValidUser(data) {
+      return data.name is string && data.name.size() > 0 && data.name.size() < 100 &&
+             data.targetRole is string && data.targetRole.size() > 0 && data.targetRole.size() < 100 &&
+             (!('skills' in data) || (data.skills is list && data.skills.size() < 50)) &&
+             data.updatedAt is string;
+    }
+
+    function isValidRoadmap(data) {
+      return data.uid == request.auth.uid &&
+             data.role is string &&
+             data.analysis is map &&
+             data.steps is list &&
+             (!('progress' in data) || data.progress is map);
+    }
+
+    function isValidInterview(data) {
+      return data.uid == request.auth.uid &&
+             data.role is string &&
+             data.messages is list;
+    }
+
+    // ===============================================================
+    // Rules
+    // ===============================================================
+
+    match /users/{userId} {
+      allow read: if isOwner(userId);
+      allow create: if isOwner(userId) && hasRequiredFields(['name', 'targetRole', 'updatedAt']) && isValidUser(request.resource.data);
+      allow update: if isOwner(userId) && isValidUser(request.resource.data);
+
+      // Subcollections for backend-managed data
+      match /analyses/{analysisId} {
+        allow read: if isOwner(userId);
+        allow write: if isOwner(userId);
+      }
+      match /interviews/{interviewId} {
+        allow read: if isOwner(userId);
+        allow write: if isOwner(userId);
+      }
+    }
+
+    match /roadmaps/{roadmapId} {
+      allow read, update, delete: if isDocOwner();
+      allow create: if isNewDocOwner() && isValidRoadmap(request.resource.data);
+    }
+
+    match /interviews/{interviewId} {
+      allow read, update, delete: if isDocOwner();
+      allow create: if isNewDocOwner() && isValidInterview(request.resource.data);
+    }
+
+    // Default deny
+    match /{path=**} {
+      allow read, write: if false;
+    }
+  }
+}

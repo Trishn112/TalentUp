@@ -1,0 +1,122 @@
+{
+  "entities": {
+    "User": {
+      "title": "User Profile",
+      "description": "Stores user profile information and target career goals",
+      "type": "object",
+      "properties": {
+        "name": { "type": "string", "description": "Full name of the user" },
+        "targetRole": { "type": "string", "description": "The career role the user is aiming for" },
+        "skills": { "type": "array", "items": { "type": "string" }, "description": "List of current skills" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["name", "targetRole"]
+    },
+    "Analysis": {
+      "title": "Skill Gap Analysis",
+      "description": "Results of resume analysis and skill gap identification",
+      "type": "object",
+      "properties": {
+        "targetRole": { "type": "string" },
+        "analysis": {
+          "type": "object",
+          "properties": {
+            "currentSkills": { "type": "array", "items": { "type": "string" } },
+            "missingSkills": { "type": "array", "items": { "type": "string" } },
+            "gapReport": { "type": "string" },
+            "matchPercentage": { "type": "number" }
+          }
+        },
+        "courses": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "title": { "type": "string" },
+              "platform": { "type": "string" },
+              "url": { "type": "string" },
+              "skill": { "type": "string" },
+              "isFree": { "type": "boolean" }
+            }
+          }
+        },
+        "roadmap": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "phase": { "type": "string" },
+              "topics": { "type": "array", "items": { "type": "string" } },
+              "description": { "type": "string" }
+            }
+          }
+        },
+        "createdAt": { "type": "string", "format": "date-time" }
+      }
+    },
+    "Interview": {
+      "title": "Mock Interview Session",
+      "description": "Details of a mock interview session and AI evaluation",
+      "type": "object",
+      "properties": {
+        "role": { "type": "string" },
+        "level": { "type": "string" },
+        "questions": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "question": { "type": "string" },
+              "category": { "type": "string" }
+            }
+          }
+        },
+        "responses": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "question": { "type": "string" },
+              "userResponse": { "type": "string" },
+              "evaluation": {
+                "type": "object",
+                "properties": {
+                  "score": { "type": "number" },
+                  "feedback": { "type": "string" },
+                  "suggestions": { "type": "array", "items": { "type": "string" } }
+                }
+              },
+              "submittedAt": { "type": "string", "format": "date-time" }
+            }
+          }
+        },
+        "status": { "type": "string", "enum": ["in-progress", "completed"] },
+        "averageScore": { "type": "number" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "completedAt": { "type": "string", "format": "date-time" }
+      }
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": "User",
+      "description": "Main user profile document"
+    },
+    "/users/{userId}/analyses/{analysisId}": {
+      "schema": "Analysis",
+      "description": "Historical skill gap analyses for a user (backend managed)"
+    },
+    "/users/{userId}/interviews/{interviewId}": {
+      "schema": "Interview",
+      "description": "Mock interview sessions for a user (backend managed)"
+    },
+    "/roadmaps/{roadmapId}": {
+      "schema": "Analysis",
+      "description": "Top-level roadmaps used by the frontend"
+    },
+    "/interviews/{interviewId}": {
+      "schema": "Interview",
+      "description": "Top-level interviews used by the frontend"
+    }
+  }
+}
