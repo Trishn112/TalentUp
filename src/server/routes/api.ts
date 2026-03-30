@@ -1,8 +1,8 @@
 import { Router } from "express";
-import { UserController } from "../controllers/user";
-import { AnalysisController } from "../controllers/analysis";
-import { InterviewController } from "../controllers/interview";
-import { authenticate } from "../middleware/auth";
+import { UserController } from "../controllers/user.js";
+import { AnalysisController } from "../controllers/analysis.js";
+import { InterviewController } from "../controllers/interview.js";
+import { authenticate } from "../middleware/auth.js";
 import multer from "multer";
 import rateLimit from "express-rate-limit";
 

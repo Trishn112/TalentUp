@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
-import { db, auth } from "../config/firebase";
-import { Logger } from "../utils/logger";
+import { db, auth } from "../config/firebase.js";
+import { Logger } from "../utils/logger.js";
 
 export class UserController {
   static async getProfile(req: any, res: Response) {
