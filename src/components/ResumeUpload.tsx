@@ -45,9 +45,10 @@ export default function ResumeUpload({
     try {
       const formData = new FormData();
       formData.append("resume", file);
+      formData.append("targetRole", role);
 
       const token = await auth.currentUser?.getIdToken();
-      const parseRes = await fetch("/api/parse-resume", {
+      const parseRes = await fetch("/api/analysis/resume", {
         method: "POST",
         body: formData,
         headers: {
@@ -162,4 +163,6 @@ export default function ResumeUpload({
     </div>
   );
 }
+
+
 
