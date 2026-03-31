@@ -4,7 +4,7 @@ const ai = new GoogleGenAI({ apiKey: import.meta.env.VITE_GEMINI_API_KEY });
 
 export const analyzeResume = async (resumeText: string, targetRole: string) => {
   const result = await ai.models.generateContent({
-    model: "gemini-3-flash-preview",
+    model: "gemini-2.0-flash-lite",
     contents: `Analyze this resume for the target role: ${targetRole}. 
     Resume Text: ${resumeText}`,
     config: {
@@ -79,7 +79,7 @@ export const analyzeResume = async (resumeText: string, targetRole: string) => {
 
 export const generateInterviewQuestions = async (role: string, analysis: any) => {
   const result = await ai.models.generateContent({
-    model: "gemini-3-flash-preview",
+    model: "gemini-2.0-flash-lite",
     contents: `Generate 5 interview questions for the role: ${role}. 
     Focus on these weaknesses: ${JSON.stringify(analysis.weaknesses)} and missing skills: ${JSON.stringify(analysis.missingSkills.map((s: any) => s.skill))}`,
     config: {
@@ -117,7 +117,7 @@ export const generateInterviewQuestions = async (role: string, analysis: any) =>
 
 export const generateRoadmapForRole = async (role: string) => {
   const result = await ai.models.generateContent({
-    model: "gemini-3-flash-preview",
+    model: "gemini-2.0-flash-lite",
     contents: `Generate a comprehensive learning roadmap for the role: ${role}. 
     Since no resume is provided, assume a beginner starting from scratch but aiming for professional proficiency.`,
     config: {
@@ -192,7 +192,7 @@ export const generateRoadmapForRole = async (role: string) => {
 
 export const evaluateAnswer = async (question: string, answer: string) => {
   const result = await ai.models.generateContent({
-    model: "gemini-3-flash-preview",
+    model: "gemini-2.0-flash-lite",
     contents: `Question: ${question}\nAnswer: ${answer}`,
     config: {
       systemInstruction: "Evaluate the user's interview answer. Provide feedback on correctness, confidence, and improvement tips.",
@@ -235,7 +235,7 @@ export const startInterviewChat = async (
     : "Provide general feedback on clarity, conciseness, and relevance to the role.";
 
   const chat = ai.chats.create({
-    model: "gemini-3-flash-preview",
+    model: "gemini-2.0-flash-lite",
     config: {
       systemInstruction: `You are a senior technical interviewer for the role of ${role}. 
       The candidate has the following profile analysis: ${JSON.stringify(analysis)}.

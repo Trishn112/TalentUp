@@ -10,7 +10,7 @@ export class AIService {
     if (cached) return cached;
 
     const response = await ai.models.generateContent({
-      model: "gemini-3-flash-preview",
+      model: "gemini-2.0-flash-lite",
       contents: `Analyze this resume for the target role: ${targetRole}. 
       Extract current skills, identify missing skills (gaps), and provide a skill gap report.
       
@@ -42,7 +42,7 @@ export class AIService {
     if (cached) return cached;
 
     const response = await ai.models.generateContent({
-      model: "gemini-3-flash-preview",
+      model: "gemini-2.0-flash-lite",
       contents: `Provide course recommendations for these missing skills: ${missingSkills.join(", ")}. 
       Include courses from Coursera, Udemy, and YouTube.`,
       config: {
@@ -71,7 +71,7 @@ export class AIService {
 
   static async generateRoadmap(missingSkills: string[], targetRole: string) {
     const response = await ai.models.generateContent({
-      model: "gemini-3-flash-preview",
+      model: "gemini-2.0-flash-lite",
       contents: `Generate a personalized learning roadmap for a ${targetRole} role, focusing on these missing skills: ${missingSkills.join(", ")}. 
       Break it down into phases (weeks or months).`,
       config: {
@@ -96,7 +96,7 @@ export class AIService {
 
   static async generateMockQuestions(role: string, level: string) {
     const response = await ai.models.generateContent({
-      model: "gemini-3-flash-preview",
+      model: "gemini-2.0-flash-lite",
       contents: `Generate 5 mock interview questions for a ${level} ${role} role.`,
       config: {
         responseMimeType: "application/json",
@@ -119,7 +119,7 @@ export class AIService {
 
   static async evaluateResponse(question: string, userResponse: string) {
     const response = await ai.models.generateContent({
-      model: "gemini-3-flash-preview",
+      model: "gemini-2.0-flash-lite",
       contents: `Evaluate this interview response.
       Question: ${question}
       Response: ${userResponse}`,
