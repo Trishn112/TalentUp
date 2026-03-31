@@ -39,7 +39,7 @@ export default function CodeLinter({ code, language, onIssuesFound }: CodeLinter
     setLoading(true);
     try {
       const result = await ai.models.generateContent({
-        model: "gemini-3-flash-preview",
+        model: "gemini-2.0-flash-lite",
         contents: `Lint this ${language} code and provide a list of errors, warnings, and style suggestions. 
         Focus on syntax errors, best practices, and potential bugs.
         

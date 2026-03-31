@@ -129,7 +129,7 @@ export default function Practo({ onBack }: { onBack: () => void }) {
     setActiveTab("description");
     try {
       const result = await ai.models.generateContent({
-        model: "gemini-2.0-flash",
+        model: "gemini-2.0-flash-lite",
         contents: `Generate a LeetCode-style DSA problem for topic: ${selectedTopic} in ${selectedLang}.
         Question number ${questionNumber} of 10.
         Include:
@@ -186,7 +186,7 @@ export default function Practo({ onBack }: { onBack: () => void }) {
     setActiveTab("results");
     try {
       const result = await ai.models.generateContent({
-        model: "gemini-2.0-flash",
+        model: "gemini-2.0-flash-lite",
         contents: `Evaluate this ${selectedLang} solution for: "${problem.title}".
         Solution:
         ${solution}
