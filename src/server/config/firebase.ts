@@ -1,15 +1,11 @@
 import admin from "firebase-admin";
-import fs from "fs";
-import path from "path";
-
-const configPath = path.join(process.cwd(), "firebase-applet-config.json");
-const config = JSON.parse(fs.readFileSync(configPath, "utf-8"));
 
 if (!admin.apps.length) {
+  const serviceAccount = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT || "{}");
   admin.initializeApp({
-    credential: admin.credential.applicationDefault(),
-    projectId: config.projectId,
-    storageBucket: `${config.projectId}.firebasestorage.app`,
+    credential: admin.credential.cert(serviceAccount),
+    projectId: serviceAccount.project_id,
+    storageBucket: `${serviceAccount.project_id}.firebasestorage.app`,
   });
 }
 
