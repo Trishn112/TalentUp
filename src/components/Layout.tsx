@@ -23,10 +23,10 @@ export default function Layout({ children, activeTab, setActiveTab }: { children
       <aside className="fixed left-0 top-0 h-full w-64 border-r border-black/5 dark:border-white/10 bg-gray-50 dark:bg-[#0d0d0d] p-6 hidden md:block">
         <div className="flex items-center justify-between mb-12 px-2">
           <div className="flex items-center gap-3">
-            <div className="w-8 h-8 bg-orange-500 rounded-lg flex items-center justify-center font-bold text-black">S</div>
-            <h1 className="text-xl font-bold tracking-tight">SkillGap</h1>
+            <div className="w-8 h-8 bg-orange-500 rounded-lg flex items-center justify-center font-bold text-black text-sm">T</div>
+            <h1 className="text-xl font-bold tracking-tight">TalentUp</h1>
           </div>
-          <button 
+          <button
             onClick={toggleTheme}
             className="p-2 rounded-lg bg-black/5 dark:bg-white/5 text-black/50 dark:text-white/50 hover:text-orange-500 transition-colors"
           >
@@ -40,8 +40,8 @@ export default function Layout({ children, activeTab, setActiveTab }: { children
               key={item.id}
               onClick={() => setActiveTab(item.id)}
               className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 ${
-                activeTab === item.id 
-                  ? "bg-orange-500 text-black font-semibold shadow-lg shadow-orange-500/20" 
+                activeTab === item.id
+                  ? "bg-orange-500 text-black font-semibold shadow-lg shadow-orange-500/20"
                   : "text-black/50 dark:text-white/50 hover:text-black dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/5"
               }`}
             >
@@ -97,7 +97,7 @@ export default function Layout({ children, activeTab, setActiveTab }: { children
             <item.icon size={24} />
           </button>
         ))}
-        <button 
+        <button
           onClick={toggleTheme}
           className="p-2 rounded-lg text-black/40 dark:text-white/40"
         >
