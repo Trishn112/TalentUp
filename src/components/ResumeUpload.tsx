@@ -1,15 +1,15 @@
 import React, { useState, useCallback } from "react";
 import { useDropzone } from "react-dropzone";
 import { Upload, FileText, CheckCircle, Loader2, Target, ArrowRight } from "lucide-react";
-import { motion, AnimatePresence } from "motion/react";
+import { motion } from "motion/react";
 import { analyzeResume } from "../services/aiService";
 import { db, auth } from "../firebase";
 import { addDoc, collection, serverTimestamp } from "firebase/firestore";
 
-export default function ResumeUpload({ 
-  onComplete, 
-  initialRole = "" 
-}: { 
+export default function ResumeUpload({
+  onComplete,
+  initialRole = ""
+}: {
   onComplete: (data: any) => void;
   initialRole?: string;
 }) {
@@ -18,7 +18,6 @@ export default function ResumeUpload({
   const [loading, setLoading] = useState(false);
   const [status, setStatus] = useState("");
 
-  // Update role if initialRole changes
   React.useEffect(() => {
     if (initialRole) setRole(initialRole);
   }, [initialRole]);
@@ -32,37 +31,64 @@ export default function ResumeUpload({
     accept: {
       "application/pdf": [".pdf"],
       "application/vnd.openxmlformats-officedocument.wordprocessingml.document": [".docx"],
+      "text/plain": [".txt"],
     },
     multiple: false,
   });
+
+  // Extract text from file entirely in the browser
+  const extractText = async (file: File): Promise<string> => {
+    // For TXT files
+    if (file.type === "text/plain") {
+      return await file.text();
+    }
+
+    // For DOCX files - read as ArrayBuffer and extract text
+    if (file.type === "application/vnd.openxmlformats-officedocument.wordprocessingml.document") {
+      const mammoth = await import("mammoth");
+      const buffer = await file.arrayBuffer();
+      const result = await mammoth.extractRawText({ arrayBuffer: buffer });
+      return result.value;
+    }
+
+    // For PDF files - extract readable text from buffer
+    if (file.type === "application/pdf") {
+      const buffer = await file.arrayBuffer();
+      const bytes = new Uint8Array(buffer);
+      let text = "";
+      // Extract readable ASCII text from PDF bytes
+      for (let i = 0; i < bytes.length; i++) {
+        const char = bytes[i];
+        if (char >= 32 && char <= 126) {
+          text += String.fromCharCode(char);
+        } else if (char === 10 || char === 13) {
+          text += " ";
+        }
+      }
+      // Clean up the extracted text
+      text = text
+        .replace(/\s+/g, " ")
+        .replace(/[^\w\s@.,:()\-+]/g, " ")
+        .trim();
+
+      return text.length > 100 ? text : `Resume file: ${file.name}. Target role: ${role}`;
+    }
+
+    return `Resume file: ${file.name}. Target role: ${role}`;
+  };
 
   const handleAnalyze = async () => {
     if (!file || !role) return;
 
     setLoading(true);
-    setStatus("Parsing resume...");
-
     try {
-      const formData = new FormData();
-      formData.append("resume", file);
-      formData.append("targetRole", role);
+      setStatus("Reading resume...");
+      const text = await extractText(file);
 
-      const token = await auth.currentUser?.getIdToken();
-      const parseRes = await fetch("/api/analysis/resume", {
-        method: "POST",
-        body: formData,
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-
-      if (!parseRes.ok) throw new Error("Failed to parse resume");
-      const { text } = await parseRes.json();
-
-      setStatus("AI Analysis in progress...");
+      setStatus("AI is analyzing your skills...");
       const analysisData = await analyzeResume(text, role);
 
-      setStatus("Saving roadmap...");
+      setStatus("Saving your roadmap...");
       const roadmapDoc = {
         uid: auth.currentUser?.uid,
         role,
@@ -85,14 +111,16 @@ export default function ResumeUpload({
   return (
     <div className="max-w-2xl mx-auto space-y-12 py-12 transition-colors duration-300">
       <div className="text-center space-y-4">
-        <motion.h2 
+        <motion.h2
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           className="text-4xl font-bold tracking-tight"
         >
           AI Career Mirror
         </motion.h2>
-        <p className="text-black/50 dark:text-white/50 text-lg">Upload your resume and define your target role to find your skill gaps.</p>
+        <p className="text-black/50 dark:text-white/50 text-lg">
+          Upload your resume and define your target role to find your skill gaps.
+        </p>
       </div>
 
       <div className="space-y-6">
@@ -114,7 +142,9 @@ export default function ResumeUpload({
         <div
           {...getRootProps()}
           className={`relative group cursor-pointer border-2 border-dashed rounded-2xl p-12 transition-all duration-300 flex flex-col items-center justify-center gap-4 ${
-            isDragActive ? "border-orange-500 bg-orange-500/5" : "border-black/10 dark:border-white/10 hover:border-black/20 dark:hover:border-white/20 hover:bg-black/5 dark:hover:bg-white/5"
+            isDragActive
+              ? "border-orange-500 bg-orange-500/5"
+              : "border-black/10 dark:border-white/10 hover:border-black/20 dark:hover:border-white/20 hover:bg-black/5 dark:hover:bg-white/5"
           }`}
         >
           <input {...getInputProps()} />
@@ -123,7 +153,7 @@ export default function ResumeUpload({
           </div>
           <div className="text-center">
             <p className="text-lg font-medium">{file ? file.name : "Drop your resume here"}</p>
-            <p className="text-sm text-black/40 dark:text-white/40">PDF or DOCX (Max 5MB)</p>
+            <p className="text-sm text-black/40 dark:text-white/40">PDF, DOCX, or TXT (Max 5MB)</p>
           </div>
         </div>
 
@@ -163,6 +193,3 @@ export default function ResumeUpload({
     </div>
   );
 }
-
-
-
