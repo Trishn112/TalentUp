@@ -46,9 +46,13 @@ export default function ResumeUpload({
       const formData = new FormData();
       formData.append("resume", file);
 
+      const token = await auth.currentUser?.getIdToken();
       const parseRes = await fetch("/api/parse-resume", {
         method: "POST",
         body: formData,
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
       });
 
       if (!parseRes.ok) throw new Error("Failed to parse resume");
@@ -158,3 +162,4 @@ export default function ResumeUpload({
     </div>
   );
 }
+
