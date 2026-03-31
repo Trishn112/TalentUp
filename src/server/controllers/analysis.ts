@@ -3,9 +3,10 @@ import { db, bucket } from "../config/firebase";
 import { AIService } from "../services/ai";
 import { Logger } from "../utils/logger";
 import multer from "multer";
-import { createRequire } from "module";
-const require = createRequire(import.meta.url);
-const pdf = require("pdf-parse");
+const getPdf = async (buffer: Buffer) => {
+  const { default: pdfParse } = await import("pdf-parse");
+  return pdfParse(buffer);
+};
 import mammoth from "mammoth";
 
 export class AnalysisController {
@@ -24,7 +25,7 @@ export class AnalysisController {
 
       let text = "";
       if (req.file.mimetype === "application/pdf") {
-        const data = await pdf(req.file.buffer);
+        const data = await getPdf(req.file.buffer);
         text = data.text;
       } else if (
         req.file.mimetype ===
@@ -84,3 +85,5 @@ export class AnalysisController {
     }
   }
 }
+
+
