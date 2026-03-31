@@ -7,7 +7,7 @@ import Prism from "../lib/prism";
 import { formatCode, handleSmartIndent } from "../lib/editor-utils";
 import CodeLinter from "./CodeLinter";
 
-const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
+const ai = new GoogleGenAI({ apiKey: import.meta.env.VITE_GEMINI_API_KEY });
 
 const LANGUAGES = [
   { id: "javascript", name: "JavaScript", icon: "🟨" },
